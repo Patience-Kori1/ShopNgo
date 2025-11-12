@@ -1,0 +1,80 @@
+# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
+
+# dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native
+.kotlin/
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# macOS
+.DS_Store
+*.pem
+
+# local env files
+.env*.local
+
+# typescript
+*.tsbuildinfo
+
+app-example
+
+# generated native folders
+/ios
+/android
+
+.env
+.env.development
+.env.test
+.env.production
+
+# -----------------------
+# IDE / éditeurs
+# -----------------------
+.vscode/
+.idea/
+*.swp
+
+# -----------------------
+# Fichiers système Windows
+# -----------------------
+Thumbs.db
+
+# -----------------------
+# Fichiers de build ou temporaires
+# -----------------------
+build/
+tmp/
+coverage/
+*.bak
+*.tmp
+
+# -----------------------
+# Expo shared config
+# -----------------------
+.expo-shared/
+
+# -----------------------
+# Backend potentiel (Node/Express)
+# -----------------------
+package-lock.json
+pnpm-lock.yaml
