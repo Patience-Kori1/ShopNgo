@@ -1,18 +1,218 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import HomeHeader from '../HomeHeader';
-import { useState} from 'react';
+import { useState, useEffect} from 'react';
+import { useProductStore } from '@/store/productStore';
+import {Product} from '@/type'
+import Wrapper from '@/components/Wrapper';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import { AppColors } from '@/constants/theme';
+import { AntDesign } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import ProductCard from '@/components/ProductCard'
+
 export default function HomeScreen() {
- // State local pour stocker les "produits en vedette"
-  const [featuredProducts, setFeaturedProducts] = useState();  
-  return (
-      <View>
-        <HomeHeader/>
-      </View>
+  // State local pour stocker les "produits en vedette"
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const router = useRouter()
   
+  // Premier effet : chargement des produits et catégories à l'ouverture de l'écran
+  const {
+    products, categories,
+    fetchProducts, fetchCategories,
+    loading, error,
+  } = useProductStore();
+
+  // Premier effet : chargement des produits et catégories à l'ouverture de l'écran
+  useEffect(() => {
+    fetchProducts();
+    fetchCategories();
+  }, []); //[products] = boucle infini attention  
+
+  // Deuxième effet : sélection de produits "en vedette" quand products change
+  useEffect(() => {
+    // Si la liste des produits n'est pas vide
+    if (products.length > 0) {
+      // Crée une copie inversée des produits (pour simuler une sélection récente en tête de liste)
+      const reverseProducts = [...products].reverse();
+      // Met à jour le state local "featuredProducts"
+      setFeaturedProducts(reverseProducts as Product[]);
+    }
+  },[]);
+
+  const navigateToCategory = (category: string) => {
+  router.push({
+    pathname: '/(tabs)/shop',
+    params: { 
+      category 
+    },
+  });
+ }
+
+  if(loading) {
+  return(
+     <SafeAreaView style={styles.container}>
+      <View style={styles.errorContainer}>
+        <LoadingSpinner fullScreen />
+      </View>
+    </SafeAreaView>
+     
+  );
+}
+  // Affichage en cas d'erreur lors de la récupération des données
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Error: {error}</Text>
+        </View>
+      </SafeAreaView>
+    )
+  }
+  return (
+    <View style={styles.wrapper}>
+      <HomeHeader/>
+
+      {/* Conteneur principal défilable */}
+      <View style={styles.contentContainer}>
+        <ScrollView 
+          showsVerticalScrollIndicator={false} 
+          contentContainerStyle={styles.scrollContainerView}
+        >
+          
+          {/* Section des catégories de produits */}
+          <View style={styles.categoriesSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Catégories</Text>
+            </View>
+          </View>
+        </ScrollView>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+        >
+            {categories?.map((category) => (
+              <TouchableOpacity
+                style= {styles.categoryButton}
+                key={category}
+                onPress={()=>navigateToCategory(category)}
+              >
+                <AntDesign 
+                  name="tag"
+                  size={16}
+                  color={AppColors.primary[500]}
+                />
+                <Text style={styles.categoryText}>
+                  {category.charAt(0).toUpperCase() + category.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+        </ScrollView>
+      </View>
+      
+      {/* Section des produits "Meilleurs Ventes" */}
+      <View style={styles.featuredSection}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Meilleurs Ventes</Text>
+            <TouchableOpacity>
+              {/* onPress={navigateToAllProducts} dans le touchable opacity */}
+              <Text style={styles.seeAllText}>Voir tout</Text>
+            </TouchableOpacity>
+        </View>
+        <FlatList 
+          data={featuredProducts}
+          keyExtractor={(item) => item.id.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.featuredProductsContainer}
+          renderItem={({ item }) => (
+            <View style={styles.featuredProductContainer}>
+              <ProductCard product={item} compact/>
+            </View>
+          )}
+        />
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
- 
+  wrapper: {
+    // flex: 1,
+    backgroundColor: AppColors.background.primary,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: AppColors.background.primary,
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+   errorText: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 16,
+    color: AppColors.error,
+    textAlign: 'center',
+  },
+  contentContainer: {
+    // paddingHorizontal: 20,
+    paddingLeft: 20,
+  },
+  scrollContainerView: {
+    paddingBottom: 300,
+  },
+  categoriesSection: {
+    marginTop: 10,
+    marginBottom: 16,
+  },
+  categoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: AppColors.background.secondary,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    marginLeft: 5,
+    minWidth: 100,
+  },
+  categoryText: {
+    marginLeft: 6,
+    fontFamily: 'Inter-Medium',
+    fontSize: 12,
+    color: AppColors.text.primary,
+    textTransform: 'capitalize',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+    paddingRight: 20,
+  },
+  sectionTitle: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    color: AppColors.primary[500],
+  },
+  seeAllText: {
+    fontFamily: 'Inter-Medium',
+    fontSize: 14,
+    color: AppColors.primary[500],
+  },
+  productContainer: {
+    width: "48%",
+  },
+  featuredSection: {
+    marginVertical: 16,
+  },
+  featuredProductsContainer: {
+
+  },
+  featuredProductContainer: {
+
+  },
 });
