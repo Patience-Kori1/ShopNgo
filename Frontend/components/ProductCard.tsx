@@ -45,9 +45,10 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Text>
         </View>
         <View style={styles.footer}>
-            <Text style={[styles.price, !compact && { marginBottom: 7}]}>
+            <Text style={[styles.price]}>
                 €{price.toFixed(2)}
             </Text>
+            
         </View>
     </TouchableOpacity>
   )
