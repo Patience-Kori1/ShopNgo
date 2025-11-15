@@ -4,10 +4,13 @@ import {
     ViewStyle,
     TouchableOpacity,
     Image,
+    Alert,
 } from 'react-native';
 import React from 'react';
 import { Product } from '@/type';
 import { AppColors } from '@/constants/theme';
+import Button from './Button';
+import Toast from 'react-native-toast-message';
 
 interface ProductCardProps {
     product: Product;
@@ -21,6 +24,13 @@ const ProductCard: React.FC<ProductCardProps> = ({
     customStyle
 }) => {
     const { id, title, price, category, image, rating} = product;
+    const handleAddToCart = () => {
+         Toast.show({
+            type: 'success',
+            text1: `Produit ${title} ajouté au panier 👋`,
+            text2: "Voir le panier pour finaliser votre achat.", 
+        });
+    };
   return (
     <TouchableOpacity
         style= {[ styles.card, compact && styles.compactCard,customStyle]}
@@ -45,10 +55,16 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Text>
         </View>
         <View style={styles.footer}>
-            <Text style={[styles.price]}>
+            <Text style={[styles.price, !compact && { marginBottom: 6}]}>
                 €{price.toFixed(2)}
             </Text>
-            
+            {!compact && 
+                <Button 
+                    onPress={handleAddToCart}
+                    title="Ajouter au panier" 
+                    size="small" 
+                    variant="outline"
+                />}
         </View>
     </TouchableOpacity>
   )
