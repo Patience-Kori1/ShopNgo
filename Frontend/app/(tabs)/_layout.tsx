@@ -42,8 +42,13 @@ export default function TabLayout() {
         ),
         }}
       />
+      <Tabs.Screen
+        name="product/[id]"
+        options={{  tabBarStyle : {display: "none"} }}
+      />
+
       <Tabs.Screen name="search" options={{href:null }}/>
-      <Tabs.Screen name="favorite" options={{href:null }}/>
+      <Tabs.Screen name="favorites" options={{href:null }}/>
       <Tabs.Screen name="cart" options={{href:null }}/>
     </Tabs>
   );

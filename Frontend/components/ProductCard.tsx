@@ -11,6 +11,7 @@ import { Product } from '@/type';
 import { AppColors } from '@/constants/theme';
 import Button from './Button';
 import Toast from 'react-native-toast-message';
+import { useRouter } from 'expo-router';
 
 interface ProductCardProps {
     product: Product;
@@ -24,15 +25,29 @@ const ProductCard: React.FC<ProductCardProps> = ({
     customStyle
 }) => {
     const { id, title, price, category, image, rating} = product;
+
+    //Méthode pour gérer le bouton d'ajout au panier
     const handleAddToCart = () => {
          Toast.show({
             type: 'success',
             text1: `Produit ${title} ajouté au panier 👋`,
             text2: "Voir le panier pour finaliser votre achat.", 
+            visibilityTime: 2000, //durée de visibilité du message
+            position: 'top', //Positionnement de la modale
         });
+    };
+
+    //Création sur le product card de la méthode pour la redirection après le onpress
+    const router = useRouter();
+    const handleProductRoute = () => {
+        // Logique pour naviguer vers la page du produit
+        //on ecrit la route de cette manière car expo router n'accepte pas les types dynamiques
+        //juste les routes strictes / statiques
+        router.push(`/product/${id}` as any);
     };
   return (
     <TouchableOpacity
+        onPress={handleProductRoute}
         style= {[ styles.card, compact && styles.compactCard,customStyle]}
         activeOpacity={0.8}
     >
