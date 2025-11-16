@@ -1,11 +1,75 @@
-import { StyleSheet, Text, View, Platform } from 'react-native'
+import { StyleSheet, Text, View, Platform, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { AppColors } from '@/constants/theme';
+import { Feather, AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 
-const CommonHeader = () => {
+interface Props {
+    isFav?: boolean;
+    showCart?: boolean;
+    handleToggleFavorite?: () => void;
+}
+
+const CommonHeader = ({isFav,handleToggleFavorite}:Props) => {
+    const router = useRouter();
+    const handleGoBack = () => {
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.push('/');
+        }
+    };
   return (
-    <View>
-      <Text>CommonHeader</Text>
+    <View style={styles.header}>
+        {/* Le bouton de retour avec une flèche */}
+        <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
+            <Feather 
+                name="arrow-left" size={20} 
+                color={AppColors.text.primary} 
+            />
+        </TouchableOpacity>
+        
+        {/* La view qui englobe le petit coeur du favoris et du panier de la page xt */}
+        <View style={styles.buttonView}>
+            {/* Le petit coeur du header pour aimer un produit */}
+            <TouchableOpacity
+                style={[
+                    styles.favoriteButton,
+                    isFav && styles.activeFavoriteButton
+                ]}
+                onPress={handleToggleFavorite}
+            >
+                <AntDesign 
+                    name="heart" 
+                    size={20} 
+                    // Changement de couleur selon que le coeur a été cliqué dessus ou pas
+                    color={
+                        isFav ? AppColors.background.primary : AppColors.text.primary
+                    } 
+                    fill={isFav ? AppColors.background.primary : "transparent"}
+                />
+            </TouchableOpacity>
+
+            {/* Le bouton panier pour ajouter le produit en panier */}
+            <TouchableOpacity
+                style={[
+                    styles.favoriteButton,
+                    isFav && styles.activeFavoriteButton
+                ]}
+                onPress={()=> router.push("/(tabs)/cart")}
+            >
+                <MaterialCommunityIcons 
+                    name="cart-outline" 
+                    size={24} 
+                    color={
+                        isFav ? AppColors.background.primary : 
+                        AppColors.text.primary
+                    } 
+                    fill={isFav ? AppColors.background.primary : "transparent"}
+                />
+            </TouchableOpacity>
+        </View>
+
     </View>
   )
 }
