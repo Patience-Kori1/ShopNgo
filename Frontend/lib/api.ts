@@ -20,26 +20,6 @@ export const getProducts = async (): Promise<Product[]> => {
     }
 };
 
-// Récupère un produit unique par son identifiant (id)
-export const getProduct = async (id:number): Promise<Product> => {
-    try {
-        // Effectue une requête fetch vers l'API pour récupérer un produit spécifique
-        const response = await fetch(`${API_URL}/products/${id}`);
-        // Vérifie si la réponse est OK (code HTTP 200-299)
-        if (!response.ok) {
-            // Lance une erreur si la réponse n'est pas correcte
-            throw new Error('Network response was not ok');
-        }
-        // Retourne les données JSON converties en objet Product
-        return await response.json();
-    } catch (error) {
-        // Affiche une erreur dans la console en indiquant l'id du produit concerné
-        console.error('Error fetching product with id ${id}:', error);
-        // Relance l'erreur pour être gérée ailleurs
-        throw error;
-    }
-};
-
 //All Categories
 // Récupère toutes les catégories de produits disponibles
 export const getCategories = async (): Promise<string[]> => {
@@ -59,5 +39,28 @@ export const getCategories = async (): Promise<string[]> => {
         throw error;
     }
 };
+
+//#region Single Product
+// Single Product
+// Récupère un produit unique par son identifiant (id)
+export const getProduct = async (id:number): Promise<Product> => {
+    try {
+        // Effectue une requête fetch vers l'API pour récupérer un produit spécifique
+        const response = await fetch(`${API_URL}/products/${id}`);
+        // Vérifie si la réponse est OK (code HTTP 200-299)
+        if (!response.ok) {
+            // Lance une erreur si la réponse n'est pas correcte
+            throw new Error('Network response was not ok');
+        }
+        // Retourne les données JSON converties en objet Product
+        return await response.json();
+    } catch (error) {
+        // Affiche une erreur dans la console en indiquant l'id du produit concerné
+        console.error('Error fetching product with id ${id}:', error);
+        // Relance l'erreur pour être gérée ailleurs
+        throw error;
+    }
+};
+//#endregion
 
 
