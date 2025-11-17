@@ -6,15 +6,20 @@ import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
 export default function TabLayout() {
+  // Détection du mode 'light' ou 'dark' pour adapter les couleurs des tabs
   const colorScheme = useColorScheme();
 
   return (
+    // <Tabs />
+    // Définition de la barre d’onglets principale de l’app
     <Tabs
+    // Options générales pour l’ensemble des onglets
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
+      {/* Onglet Boutique (Shop), icône chariot */}
       <Tabs.Screen
         name="index"
         options={{
@@ -24,6 +29,7 @@ export default function TabLayout() {
           ),
         }}
       />
+      {/* Onglet Boutique (Shop), icône chariot */}
       <Tabs.Screen
         name="shop"
         options={{
@@ -33,6 +39,7 @@ export default function TabLayout() {
         ),
         }}
       />
+      {/* Onglet Profil (Profile), icône utilisateur */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -42,14 +49,12 @@ export default function TabLayout() {
         ),
         }}
       />
-      <Tabs.Screen
-        name="product/[id]"
-        options={{  tabBarStyle : {display: "none"} }}
-      />
 
+      {/* Les onglets suivants sont masqués du tab bar mais accessibles via navigation */}
       <Tabs.Screen name="search" options={{href:null }}/>
       <Tabs.Screen name="favorites" options={{href:null }}/>
       <Tabs.Screen name="cart" options={{href:null }}/>
+      <Tabs.Screen name="product/[id]" options={{href:null }}/>
     </Tabs>
   );
 }
