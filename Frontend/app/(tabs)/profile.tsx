@@ -38,14 +38,14 @@ const profileScreen = () => {
               title="Connexion" fullWidth 
               style={styles.loginButton}
               textStyle={styles.buttonText}
-              onPress={() => router.push("")} //normalement ("/(tabs)/login")
+              onPress={() => router.push("/(tabs)/login")} //normalement ("/(tabs)/login")
             />
             {/* Bouton pour accéder à la page d'inscription */}
             <Button title="Inscription" fullWidth 
-                    variant='outline'
-                    style={styles.signupButton}
-                    textStyle={styles.signupButtonText}
-                    onPress={() => router.push("")} //normalement ("/(tabs)/signup")
+              variant='outline'
+              style={styles.signupButton}
+              textStyle={styles.signupButtonText}
+              onPress={() => router.push("/(tabs)/signup")} //normalement ("/(tabs)/signup")
             />
           </View>
         </View>
