@@ -9,14 +9,17 @@ import TextInput from '@/components/TextInput';
 import Button from '@/components/Button';
 
 const SignUpScreen = () => {
+    // États locaux pour gérer la saisie utilisateur dans les champs email, mot de passe et sa confirmation 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    // États séparés pour stocker les messages d'erreur de validation pour chaque champ
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
     const [confirmError, setConfirmError] = useState("");
-
+    // Hook pour la navigation entre les écrans
     const router = useRouter();
+    // Extraction des fonctions et états du store d'authentification (login, isLoading, erreurs)
     const { signup, isLoading, error } = useAuthStore();
 
     // Implémentation de la logique de soumission du formulaire

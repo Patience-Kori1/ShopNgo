@@ -27,6 +27,7 @@ const profileScreen = () => {
       {user ? (
           <View>
             <Text>User disponible</Text>
+            <Text style={styles.profileEmail}>{user?.email}</Text>
           </View>
         ):(
           /* Si utilisateur non connecté */
