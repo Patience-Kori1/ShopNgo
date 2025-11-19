@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, Platform, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthStore } from '@/store/authStore';
@@ -7,12 +7,13 @@ import { Feather, FontAwesome, FontAwesome5, Foundation, MaterialIcons } from '@
 import { AppColors } from '@/constants/theme';
 import Wrapper from '@/components/Wrapper'; 
 import Button from '@/components/Button';
+import Toast from 'react-native-toast-message';
 
 // Composant écran Profile utilisateur
 const profileScreen = () => {
 
   // Extraction des fonctions et états depuis le store d'authentification personnalisé
-  const { user, logout, checkSession } = useAuthStore();
+  const { user, logout, checkSession, isLoading } = useAuthStore();
   // Hook de navigation pour gérer les changements de route
   const router = useRouter();
   // Effet déclenché à chaque changement de l'utilisateur (user)
@@ -99,6 +100,38 @@ const profileScreen = () => {
       },
     }
   ];
+
+  // Fonction pour gérer la déconnexion avec confirmation utilisateur
+  const handleLogout = async () => {
+    Alert.alert("Déconnexion", "Etes vous sur de vouloir vous deconnecter ?", [
+      {
+        // Option annuler sans action
+        text: "Annuler",
+        style: "cancel",
+      },
+      {
+        // Option confirmer déconnexion
+        text: "Deconnexion",
+        onPress: async() => {
+          try {
+            await logout() // Appelle la fonction de déconnexion du store logout()
+            
+            Toast.show({ // Affichage d'une petit modale de déconnexion avec Toast
+              type: "success",
+              text1: "Déconnexion réussi",
+              text2: "Vous avez été déconnecté",
+              visibilityTime: 2000,
+            });
+            
+          } catch (error) {
+            // Gère l'erreur de déconnexion et affiche une alerte
+            console.error("Profil: Erreur pendant la déconnexion:", error);
+            Alert.alert("Erreur de déconnexion", "Une erreur est survenue");
+          }
+        },
+      },
+    ]);
+  }
   
   return (
      <Wrapper>
@@ -131,7 +164,7 @@ const profileScreen = () => {
             </View>
           </View>
 
-          {/* Affichage du Menu des options utilisateur de l'array menuItems */}
+          {/* Affichage du Menu des options user de l'array menuItems à l'aide de map*/}
           <View style={styles.menuContainer}>
             {menuItems?.map((item) => (
               <TouchableOpacity 
@@ -153,6 +186,18 @@ const profileScreen = () => {
                 />
               </TouchableOpacity>
             ))}
+          </View>
+
+          {/* Bouton déconnexion */}
+          <View style={styles.logoutContainer}>
+            <Button 
+              title="Déconnexion"
+              onPress={handleLogout}
+              variant='outline'
+              fullWidth style={styles.logoutButton}
+              textStyle={styles.logoutButtonText}
+              disabled={isLoading}
+            />
           </View>
         </View>
         ):(
