@@ -57,6 +57,8 @@ export default function TabLayout() {
       <Tabs.Screen name="product/[id]" options={{href:null }}/>
       <Tabs.Screen name="login" options={{href:null }}/>
       <Tabs.Screen name="signup" options={{href:null }}/>
+      <Tabs.Screen name="orders" options={{href:null }}/>
+      <Tabs.Screen name="deliveryAddress" options={{href:null }}/>
     </Tabs>
   );
 }

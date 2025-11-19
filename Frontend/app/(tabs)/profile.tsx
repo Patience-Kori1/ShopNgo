@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform } from 'react-native'
+import { StyleSheet, Text, View, Platform, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuthStore } from '@/store/authStore';
@@ -10,7 +10,8 @@ import Button from '@/components/Button';
 
 // Composant écran Profile utilisateur
 const profileScreen = () => {
-   // Extraction des fonctions et états depuis le store d'authentification personnalisé
+
+  // Extraction des fonctions et états depuis le store d'authentification personnalisé
   const { user, logout, checkSession } = useAuthStore();
   // Hook de navigation pour gérer les changements de route
   const router = useRouter();
@@ -21,16 +22,142 @@ const profileScreen = () => {
       checkSession();
     }
   }, [user]);
+
+  // Tableau des éléments du menu avec icônes, titre, et actions au clic
+  const menuItems = [
+    {
+      id: 'cart',
+      icon:(
+        <Foundation 
+          name= "shopping-cart" 
+          size={20}  
+          color={AppColors.primary[500]}
+        />
+      ),
+      title: 'Mon panier',
+      onPress: () => {
+        // Navigation vers la page panier
+        router.push("/(tabs)/cart");
+      }
+    },
+    {
+      id: 'orders',
+      icon:(
+        <FontAwesome5
+          name="box-open"
+          size={16}
+          color={AppColors.primary[500]}
+        />
+      ),
+      title: "Mes commandes",
+      onPress: () => {
+        // Navigation vers la page commandes
+        router.push("/(tabs)/orders");
+      },
+    },
+    {
+      id: 'payment',
+      icon:(
+        <Foundation
+          name="credit-card"
+          size={20}
+          color={AppColors.primary[500]}
+        />
+      ),
+      title: "Mes Paiements",
+      onPress: () => {
+      // Action à définir pour la gestion des paiements 
+      },
+    },
+    {
+      id: 'address',
+      icon:(
+        <Foundation
+          name="home"
+          size={20}
+          color={AppColors.primary[500]}
+        />
+      ),
+      title: "Adresse de livraison",
+      onPress: () => {
+        // Navigation vers adresse livraison
+         router.push("/(tabs)/deliveryAddress");
+      },
+    },
+    {
+      id: 'settings',
+      icon:(
+        <Foundation
+          name="home"
+          size={20}
+          color={AppColors.primary[500]}
+        />
+      ),
+      title: "Paramètres",
+      onPress: () => {
+        // Action à définir pour les paramètres utilisateur
+      },
+    }
+  ];
   
   return (
      <Wrapper>
       {user ? (
-          <View>
-            <Text>User disponible</Text>
-            <Text style={styles.profileEmail}>{user?.email}</Text>
+        <View>
+
+          {/* Titre du screen */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Mon Profil</Text>
           </View>
+
+{/**************** Rendu du screen si user connecté *************/}
+          {/* Carte profil avec avatar et email */}
+          <View style={styles.profileCard}>
+            {/* Avatar et son conteneur */}
+            <View style={styles.avatarContainer}>
+              <Feather 
+                name='user'
+                size={40}
+                color={AppColors.gray[400]}
+              />
+            </View>
+
+            {/* Adresse email du user et modification du profile */}
+            <View style={styles.profileInfo}>
+              <Text style={styles.profileEmail}>{user?.email}</Text>
+              <TouchableOpacity>
+                <Text style={styles.editProfileText}>Modifier mon profil</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Affichage du Menu des options utilisateur de l'array menuItems */}
+          <View style={styles.menuContainer}>
+            {menuItems?.map((item) => (
+              <TouchableOpacity 
+                key={item?.id} 
+                style={styles.menuItem}
+                onPress={item?.onPress}
+              >
+                <View style={styles.menuItemLeft}>
+                  {/* icone de l'item */}
+                  {item?.icon}
+                  {/* titre de l'item */}
+                  <Text style={styles.menuItemTitle}>{item?.title}</Text>
+                </View>
+                {/* Petit chevron à droite pour montrer la navigation */}
+                <MaterialIcons 
+                  name="chevron-right"
+                  size={24}
+                  color={AppColors.gray[400]}
+                />
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
         ):(
-          /* Si utilisateur non connecté */
+
+/****************** Rendu du screen si user n'est pas connecté *****************************/
         <View style={styles.container}>
           <Text style={styles.title}>Bienvenue !</Text>
           <Text style={styles.message}>Connectez-vous ou inscrivez svp pour accéder à votre profil</Text>
@@ -81,6 +208,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderBottomWidth: 1,
     borderBottomColor: AppColors.gray[200],
+  },
+   profileInfo: {
+    flex: 1,
   },
   profileEmail: {
     fontFamily: "Inter-SemiBold",
@@ -155,5 +285,14 @@ const styles = StyleSheet.create({
     fontFamily: "Inter-SemiBold",
     fontSize: 16,
     color: AppColors.primary[500],
+  },
+  avatarContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: AppColors.gray[200],
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
   },
 })
