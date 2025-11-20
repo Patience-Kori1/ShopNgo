@@ -110,7 +110,7 @@ const profileScreen = () => {
         style: "cancel",
       },
       {
-        // Option confirmer déconnexion
+        // Option confirmer déconnexion du logout
         text: "Deconnexion",
         onPress: async() => {
           try {
