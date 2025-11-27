@@ -1,18 +1,52 @@
-import { StyleSheet, Text, View, Platform, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { AppColors } from '@/constants/theme';
 import Wrapper from '@/components/Wrapper';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
-
+import { useProductStore } from '@/store/productStore';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 const shopScreen = () => {
-
+  // Récupération des paramètres de recherche et catégorie dans l'URL
+  const {q:searchParam,category:categoryParam} = useLocalSearchParams<{
+    q?:string; 
+    category?:string
+  }>();
+  console.log(categoryParam);
+  // Extraction des méthodes et états du store produit (zustand ou autre)
+  const {
+    filteredProducts, 
+    selectedCategory, loading, 
+    error, fetchProducts,
+    setCategory, sortProducts,  
+    fetchCategories, categories,
+    products,
+  } = useProductStore();
+  
+  // État local pour afficher/masquer la modal de tri
+  const [showShortModal, setShowShortModal] = useState(false);
+  // État pour indiquer l'option de tri active (prix, note...)
+  const [activeSortOption, setActiveSortOption] = useState<string | null>(null);
+  // État pour savoir si un filtre est actif ou non
+  const [isFilterActive, setIsFilterActive] = useState(false);
   const renderHeader = () => {
+  
+  // Hook d'effet appelé au montage du composant :
+  // - Récupération des catégories et produits via le store
+  // - Initialisation de la catégorie sélectionnée si spécifiée dans les params
+  useEffect(() => {
+    fetchCategories();
+    fetchProducts();
+    if (categoryParam) {
+      setCategory(categoryParam);
+    }
+  }, []);
+  // console.log(loading);
+  const router = useRouter();
+
     return (
-      // View du header de la page ShopScreen
-
+    // View du header de la page ShopScreen
     <View style={styles.header}>
-
       {/* Titre de la screen */}
       <Text style={styles.title}>Tous les produits</Text>
       {/* View de la barre de recherche */}
@@ -37,21 +71,76 @@ const shopScreen = () => {
         <TouchableOpacity 
             style={[
               styles.sortOptionView,
+              isFilterActive && styles.activeSortButton, 
+            ]}
+        >
+          <AntDesign 
+            name='filter'
+            size={20}
+            color={AppColors.text.primary}
+          />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.categoriesContainer}
+      >
+        {/* Bouton "Tous" pour réinitialiser la catégorie */}
+        <TouchableOpacity 
+          style={[
+            styles.categoryButton,
+            selectedCategory === null && styles.selectedCategory
+          ]}
+          onPress={() => setCategory(null)}
+        >
+          <Text 
+            style={[
+              styles.categoryText,
+              selectedCategory === null && styles.selectedCategoryText
             ]}
           >
-            <AntDesign 
-              name='filter'
-              size={20}
-              color={AppColors.text.primary}
-            />
+            Tous
+          </Text>
+        </TouchableOpacity>
+        {/* Boutons pour chaque catégorie disponible */}
+        {categories?.map((category) =>(
+          <TouchableOpacity 
+            onPress={() => setCategory(category)}
+            key={category}
+            style={[
+              styles.categoryButton,
+              selectedCategory === category && styles.selectedCategory,
+            ]}
+          >
+          <Text 
+            style={[
+              styles.categoryText,
+              selectedCategory === category && styles.selectedCategoryText
+            ]}
+          >
+            {category.charAt(0).toUpperCase() + category.slice(1)}
+          </Text>
           </TouchableOpacity>
-      </View>
+        ))}
+      </ScrollView>
     </View>
     )
   }
+  console.log(filteredProducts)
   return (
     <Wrapper>
       { renderHeader() }
+      {filteredProducts?.length === 0 ? (
+        <View>
+          <Text>Pas de produits</Text>
+        </View>
+      ) : (
+        <View>
+          <Text>Produits</Text>
+        </View>
+      )}
     </Wrapper>
   )
 }
