@@ -9,6 +9,8 @@ const shopScreen = () => {
 
   const renderHeader = () => {
     return (
+      // View du header de la page ShopScreen
+
     <View style={styles.header}>
 
       {/* Titre de la screen */}
