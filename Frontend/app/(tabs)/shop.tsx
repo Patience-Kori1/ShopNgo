@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView, FlatList } from 'react-native'
+import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView, FlatList, Modal } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { AppColors } from '@/constants/theme';
@@ -77,6 +77,7 @@ const shopScreen = () => {
               styles.sortOptionView,
               isFilterActive && styles.activeSortButton, 
             ]}
+            onPress={ () => setShowShortModal(true)}
         >
           <AntDesign 
             name='filter'
@@ -134,6 +135,32 @@ const shopScreen = () => {
   }
   //#endregion
   // console.log(filteredProducts)
+
+  //sortBY rappelez vous le productStore price-asc price desc rating on a fait le switch case
+  // Gestion du tri des produits selon un critère donné
+  const handleSort= (sortBy: "price-asc" | "price-desc" | "rating") => {
+    // Appliquer le tri dans le store
+    sortProducts(sortBy);
+    // Mémoriser l'option de tri active
+    setActiveSortOption(sortBy);
+    // Fermer la modal de tri
+    setShowShortModal(false);
+    // Activer le filtre visuel
+    setIsFilterActive(true);
+  };
+
+  // Réinitialisation des filtres et tri
+  const handleResetFilter = () => {
+    // Tri par défaut (prix croissant)
+    sortProducts("price-asc");
+    // Aucune option de tri active
+    setActiveSortOption(null);
+    // Fermer la modal
+    setShowShortModal(false);
+    // Désactiver l'indicateur de filtre
+    setIsFilterActive(false);
+  };
+  // Rendu principal du composant
   return (
     <Wrapper>
       { renderHeader() }
@@ -164,6 +191,78 @@ const shopScreen = () => {
           />
         )
       }
+      <Modal 
+        visible={showShortModal}
+        transparent
+        animationType='fade'
+        onRequestClose={() => setShowShortModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Trier par</Text>
+              <TouchableOpacity onPress={() => setShowShortModal(false)}>
+                <AntDesign 
+                name='close'
+                size={24}
+                color={AppColors.text.primary}
+                onPress={() => setShowShortModal(false)}
+              />
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity 
+              style={styles.sortOption}
+              onPress={()=> handleSort("price-asc")}
+            >
+              <Text 
+                style={[
+                  styles.sortOptionText,
+                  activeSortOption === "price-asc" && styles.activeSortText,
+                ]}
+              >
+                Prix: Plus bas au plus élevé
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+               style={styles.sortOption}
+              onPress={()=> handleSort("price-desc")}
+            >
+              <Text style={[
+                  styles.sortOptionText,
+                  activeSortOption === "price-desc" && styles.activeSortText,
+                ]}
+              >
+                Prix: Plus élevé au plus bas 
+              </Text>
+            </TouchableOpacity>
+             <TouchableOpacity 
+               style={styles.sortOption}
+              onPress={()=> handleSort("rating")}
+            >
+              <Text style={[
+                  styles.sortOptionText,
+                  activeSortOption === "rating" && styles.activeSortText,
+                ]}
+              >
+                 Meilleur note
+              </Text>
+            </TouchableOpacity>
+             {/* Bouton visible uniquement si un filtre est actif */}
+            {isFilterActive && (
+              <TouchableOpacity 
+                style={styles.sortOption}
+                onPress={handleResetFilter}
+              >
+                <Text
+                style={[ styles.sortOptionText, { color: AppColors.error}]}
+                >
+                  Supprimer les filtres
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      </Modal>
     </Wrapper>
   )
 }

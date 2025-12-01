@@ -70,8 +70,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             </Text>
         </View>
         <View style={styles.footer}>
-            <Text style={[styles.price, !compact && { marginBottom: 6}]}>
+            <Text style={[styles.price, !compact && { marginBottom: 7}]}>
                 €{price.toFixed(2)}
+            </Text>
+            <Text style={[styles.ratingText, !compact && { marginBottom: 7}]}>
+                Notes:{rating?.rate.toFixed(1)}/{`(${rating?.count})`}
             </Text>
             {!compact && 
                 <Button 
