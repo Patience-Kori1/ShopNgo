@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView } from 'react-native'
+import { StyleSheet, Text, View, Platform, TouchableOpacity, ScrollView, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { AppColors } from '@/constants/theme';
@@ -6,13 +6,17 @@ import Wrapper from '@/components/Wrapper';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
 import { useProductStore } from '@/store/productStore';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import EmptyState from '@/components/EmptyState';
+import ProductCard from '@/components/ProductCard';
+import LoadingSpinner from '@/components/LoadingSpinner';
+
 const shopScreen = () => {
   // Récupération des paramètres de recherche et catégorie dans l'URL
-  const {q:searchParam,category:categoryParam} = useLocalSearchParams<{
+  const {q:searchParam, category:categoryParam} = useLocalSearchParams<{
     q?:string; 
     category?:string
   }>();
-  console.log(categoryParam);
+  // console.log(categoryParam);
   // Extraction des méthodes et états du store produit (zustand ou autre)
   const {
     filteredProducts, 
@@ -29,21 +33,21 @@ const shopScreen = () => {
   const [activeSortOption, setActiveSortOption] = useState<string | null>(null);
   // État pour savoir si un filtre est actif ou non
   const [isFilterActive, setIsFilterActive] = useState(false);
-  const renderHeader = () => {
-  
-  // Hook d'effet appelé au montage du composant :
-  // - Récupération des catégories et produits via le store
-  // - Initialisation de la catégorie sélectionnée si spécifiée dans les params
-  useEffect(() => {
-    fetchCategories();
-    fetchProducts();
-    if (categoryParam) {
-      setCategory(categoryParam);
-    }
-  }, []);
-  // console.log(loading);
-  const router = useRouter();
 
+  //#region Constante qui implémente la logique et l'interface du header du ScreenShop
+  const renderHeader = () => {
+    // Hook d'effet appelé au montage du composant :
+    // - Récupération des catégories et produits via le store
+    // - Initialisation de la catégorie sélectionnée si spécifiée dans les params
+    useEffect(() => {
+      fetchCategories();
+      fetchProducts();
+      if (categoryParam) {
+        setCategory(categoryParam);
+      }
+    }, []);
+    // console.log(loading);
+    const router = useRouter();
     return (
     // View du header de la page ShopScreen
     <View style={styles.header}>
@@ -128,19 +132,38 @@ const shopScreen = () => {
     </View>
     )
   }
-  console.log(filteredProducts)
+  //#endregion
+  // console.log(filteredProducts)
   return (
     <Wrapper>
       { renderHeader() }
-      {filteredProducts?.length === 0 ? (
-        <View>
-          <Text>Pas de produits</Text>
+      { loading ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+          <LoadingSpinner fullScreen />;
         </View>
-      ) : (
-        <View>
-          <Text>Produits</Text>
-        </View>
-      )}
+        ) : filteredProducts?.length === 0 ? (
+            <EmptyState
+              type="search"
+              message="Pas de produits trouvé dans votre recherche"
+            />
+       ) : (
+          <FlatList 
+            // Liste des produits filtrés à afficher
+            data={filteredProducts}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={2}
+            renderItem={({item}) => (
+              <View style={styles.productContainer}>
+                <ProductCard product={item} customStyle={{ width: '100%'}}/>
+              </View>
+            )}
+            contentContainerStyle= {styles.productsGrid}
+            columnWrapperStyle= {styles.columnWrapper}
+            showsVerticalScrollIndicator  //pour ceux qui ne le veulent pas il suffit ={false}
+            ListEmptyComponent={<View style= {styles.footer} />}
+          />
+        )
+      }
     </Wrapper>
   )
 }

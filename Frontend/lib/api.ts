@@ -2,26 +2,27 @@ import { Product } from "@/type";
 
 const API_URL = "https://fakestoreapi.com";
 
-// Pour tous les produits
-
+// All products
+//#region getProducts qui récupère tous les produits
 export const getProducts = async (): Promise<Product[]> => {
     try {
         //Appel API au endpoint products
-       const response = await fetch(`${API_URL}/products`);
-       if (!response.ok) {
+        const response = await fetch(`${API_URL}/products`);
+        if (!response.ok) {
         //gestion de l'erreur si la réponse n'est pas ok
         throw new Error('Network response was not ok');
-       }
-       // Conversion du corps de la réponse json en tableau de produit
-       return await response.json();
+        }
+        // Conversion du corps de la réponse json en tableau de produit
+        return await response.json();
     } catch (error) {
         console.log('Error fetching products:', error);
         throw error;
     }
 };
+//#endregion
 
 //All Categories
-// Récupère toutes les catégories de produits disponibles
+//#region getCategories qui récupère toutes les catégories de produits disponibles
 export const getCategories = async (): Promise<string[]> => {
     try {
         // Effectue une requête fetch pour obtenir la liste des catégories
@@ -34,15 +35,15 @@ export const getCategories = async (): Promise<string[]> => {
         return await response.json();
     } catch (error) {
         // Affiche une erreur lors de la récupération des catégories
-        console.log('Error fetching products:', error);
+        console.log('Error fetching categories:', error);
         // Relance l'erreur
         throw error;
     }
 };
+//#endregion
 
-//#region Single Product
-// Single Product
-// Récupère un produit unique par son identifiant (id)
+//Single Product
+//#region getProduct qui récupère un produit unique par son identifiant (id)
 export const getProduct = async (id:number): Promise<Product> => {
     try {
         // Effectue une requête fetch vers l'API pour récupérer un produit spécifique
@@ -56,15 +57,15 @@ export const getProduct = async (id:number): Promise<Product> => {
         return await response.json();
     } catch (error) {
         // Affiche une erreur dans la console en indiquant l'id du produit concerné
-        console.error('Error fetching product with id ${id}:', error);
+        console.error(`Error fetching product with id ${id}:`, error);
         // Relance l'erreur pour être gérée ailleurs
         throw error;
     }
 };
 //#endregion
 
-//#region Product By Id
-// Récupère les produits appartenant à une catégorie spécifique
+// Product By Id
+//#region getProductsByCategory qui récupère les produits appartenant à une catégorie spécifique
 export const getProductsByCategory = async ( category: string ): Promise<Product[]> => {
     try {
         // Effectue une requête fetch vers l'API pour obtenir les produits d'une catégorie donnée
@@ -84,8 +85,8 @@ export const getProductsByCategory = async ( category: string ): Promise<Product
 };
 //#endregion
 
-//#region Product Search
-// Recherche des produits dont le titre, la description ou la catégorie correspondent à un terme donné
+//Product Search
+//#region searchProductsApi qui recherche des produits dont le titre, la description ou la catégorie correspondent à un terme donné
 export const searchProductsApi = async (query: string): Promise<Product[]> => {
     try {
         // Effectue une requête fetch pour obtenir tous les produits
